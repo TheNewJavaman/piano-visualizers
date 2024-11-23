@@ -1,0 +1,44 @@
+[gd_scene load_steps=10 format=3 uid="uid://c57ndbmlye14w"]
+
+[ext_resource type="Script" path="res://AudioStreamProcessor.cs" id="2_e55fg"]
+[ext_resource type="Shader" path="res://Visualizers/Debug/DebugVisualizer.gdshader" id="2_vbqnu"]
+[ext_resource type="Script" path="res://Visualizers/Debug/DebugVisualizer.cs" id="3_6b3ft"]
+[ext_resource type="Script" path="res://Visualizers/FlyGrid/FlyGridVisualizer.cs" id="4_3cb07"]
+
+[sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_oi1se"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_8yxpx"]
+
+[sub_resource type="MultiMesh" id="MultiMesh_mi6bx"]
+use_colors = true
+mesh = SubResource("SphereMesh_8yxpx")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ccwir"]
+shader = ExtResource("2_vbqnu")
+
+[sub_resource type="QuadMesh" id="QuadMesh_q3tw8"]
+
+[node name="Root" type="Node2D"]
+
+[node name="AudioStreamProcessor" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamMicrophone_oi1se")
+autoplay = true
+bus = &"Custom"
+script = ExtResource("2_e55fg")
+
+[node name="FlyGridVisualizer" type="MultiMeshInstance2D" parent="." node_paths=PackedStringArray("AudioStreamProcessor")]
+multimesh = SubResource("MultiMesh_mi6bx")
+script = ExtResource("4_3cb07")
+AudioStreamProcessor = NodePath("../AudioStreamProcessor")
+
+[node name="VisualizerCanvasLayer" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="DebugVisualizer" type="MeshInstance2D" parent="VisualizerCanvasLayer" node_paths=PackedStringArray("AudioStreamProcessor")]
+visible = false
+material = SubResource("ShaderMaterial_ccwir")
+position = Vector2(640, 360)
+scale = Vector2(1280, 720)
+mesh = SubResource("QuadMesh_q3tw8")
+script = ExtResource("3_6b3ft")
+AudioStreamProcessor = NodePath("../../AudioStreamProcessor")
